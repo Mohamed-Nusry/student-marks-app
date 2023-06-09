@@ -153,7 +153,10 @@ class SubjectAssignmentService {
                 //Validate Request
                 $validateRequest = Validator::make($request->all(),
                 [
-                    'name' => 'required|unique:subject_assignments',
+                    'subject_id' => 'numeric|required',
+                    'title' => 'string|required',
+                    'deadline' => 'string|required',
+                    'assignment_file' => 'required|file|max:2048',
                 ]);
 
                 if($validateRequest->fails()){
@@ -168,17 +171,82 @@ class SubjectAssignmentService {
                     return $response;
                 }
 
-                $subject_assignment = SubjectAssignment::create([
-                    'name' => $request->name,
-                    'description' => $request->description,
-                ]);
+                //Check teacher subject Exist
+                $teacher_subject_count = TeacherSubject::where('teacher_id', Auth::user()->id)->count();
 
-                $response = [
-                    'success' => true,
-                    'status' => 201,
-                    'message' => 'Data Created Successfully',
-                    'data' => $subject_assignment
-                ];
+                if($teacher_subject_count > 0){
+
+                    $teacher_subject_ids = TeacherSubject::where('teacher_id', Auth::user()->id)->pluck('subject_id')->toArray();
+
+                    if(in_array($request->subject_id, $teacher_subject_ids)){
+
+                        //Upload File
+                        if ($request->hasFile('assignment_file')) {
+                            $original_filename = $request->file('assignment_file')->getClientOriginalName();
+                            $original_filename_arr = explode('.', $original_filename);
+                            $file_ext = end($original_filename_arr);
+                            $destination_path = './uploads/assignments/';
+                            $file_name = 'C-' . time() . '.' . $file_ext;
+
+                            if ($request->file('assignment_file')->move($destination_path, $file_name)) {
+
+                                $uploadPath = '/uploads/assignments/'.$file_name ;
+
+
+                                $subject_assignment = SubjectAssignment::create([
+                                    'subject_id' => $request->subject_id,
+                                    'title' => $request->title,
+                                    'deadline' => $request->deadline,
+                                    'assignment_file' => $uploadPath,
+                                ]);
+
+                                $response = [
+                                    'success' => true,
+                                    'status' => 201,
+                                    'message' => 'Data Created Successfully',
+                                    'data' => $subject_assignment
+                                ];
+
+                            } else {
+                                $response = [
+                                    'success' => false,
+                                    'status' => 400,
+                                    'message' => 'Error while uploading',
+                                ];
+                            }
+                        }else{
+                            $response = [
+                                'success' => false,
+                                'status' => 400,
+                                'message' => 'Error while uploading',
+                            ];
+                        }
+
+
+
+
+
+
+
+
+                    }else{
+
+                        $response = [
+                            'success' => false,
+                            'status' => 400,
+                            'message' => 'This subject is not assigned to you',
+                        ];
+
+                    }
+
+                }else{
+                    $response = [
+                        'success' => false,
+                        'status' => 400,
+                        'message' => 'You have no subjects assigned',
+                    ];
+                }
+
 
                 return $response;
 
