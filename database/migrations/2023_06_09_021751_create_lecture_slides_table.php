@@ -15,6 +15,8 @@ return new class extends Migration
     {
         Schema::create('lecture_slides', function (Blueprint $table) {
             $table->id();
+            $table->integer('subject_id');
+            $table->string('slide_file');
             $table->timestamps();
         });
     }

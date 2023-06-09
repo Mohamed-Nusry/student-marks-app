@@ -15,6 +15,10 @@ return new class extends Migration
     {
         Schema::create('assignment_submissions', function (Blueprint $table) {
             $table->id();
+            $table->integer('student_id');
+            $table->integer('subject_id');
+            $table->integer('subject_assignment_id');
+            $table->string('submission_file');
             $table->timestamps();
         });
     }
