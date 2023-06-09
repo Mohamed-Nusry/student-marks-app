@@ -15,4 +15,5 @@ class Student extends Model
         'email',
         'class_id',
     ];
+
 }

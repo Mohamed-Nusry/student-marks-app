@@ -65,4 +65,17 @@ class SubjectController extends Controller
 
         return response()->json($result, $result['status']);
     }
+
+    /**
+     * Delete the specified resource.
+     *
+     * @param  \App\Models\Subject
+     * @return \Illuminate\Http\Response
+     */
+    public function delete($id)
+    {
+        $result = $this->subjectService->deleteRecord($id);
+
+        return response()->json($result, $result['status']);
+    }
 }

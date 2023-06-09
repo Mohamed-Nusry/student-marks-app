@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\StudentSubjectController;
 use App\Http\Controllers\Api\SubjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,10 +30,34 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['prefix' => 'subject', 'middleware' => ['auth:sanctum']], function(){
-    Route::get('/', [SubjectController::class, 'index']);
-    Route::post('/', [SubjectController::class, 'store']);
-    Route::put('/{id}', [SubjectController::class, 'update']);
-    Route::get('/{id}', [SubjectController::class, 'show']);
+Route::group(['prefix' => ''], function(){
+
+    Route::group(['prefix' => 'subject', 'middleware' => ['auth:sanctum']], function(){
+        Route::get('/', [SubjectController::class, 'index']);
+        Route::post('/', [SubjectController::class, 'store']);
+        Route::put('/{id}', [SubjectController::class, 'update']);
+        Route::get('/{id}', [SubjectController::class, 'show']);
+        Route::delete('/{id}', [SubjectController::class, 'delete']);
+    });
+
+    Route::group(['prefix' => 'student'], function(){
+
+        Route::post('/', [StudentController::class, 'store']);
+
+        Route::group(['prefix' => '', 'middleware' => ['auth:sanctum']], function(){
+            Route::get('/', [StudentController::class, 'index']);
+            Route::put('/{id}', [StudentController::class, 'update']);
+            Route::get('/{id}', [StudentController::class, 'show']);
+        });
+    });
+
+    Route::group(['prefix' => 'student/subject', 'middleware' => ['auth:sanctum']], function(){
+        Route::post('/', [StudentSubjectController::class, 'store']);
+        Route::put('/{id}', [StudentSubjectController::class, 'update']);
+        Route::delete('/{id}', [StudentSubjectController::class, 'delete']);
+    });
+
 });
+
+
 

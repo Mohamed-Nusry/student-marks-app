@@ -48,13 +48,13 @@ class SubjectService {
             //Check Data Exist
             $subject_count = Subject::where('id', $id)->count();
 
-            if(Auth::check()){
-                $subject = Subject::with('slides')->with('assignments')->where('id', $id)->first();
-            }else{
-                $subject = Subject::where('id', $id)->first();
-            }
-
             if($subject_count > 0){
+
+                if(Auth::check()){
+                    $subject = Subject::with('slides')->with('assignments')->where('id', $id)->first();
+                }else{
+                    $subject = Subject::where('id', $id)->first();
+                }
 
                 $response = [
                     'success' => true,
@@ -71,7 +71,6 @@ class SubjectService {
                     'success' => false,
                     'status' => 404,
                     'message' => 'Record Not Found',
-                    'data' => $subject
                 ];
 
                 return $response;
@@ -186,4 +185,52 @@ class SubjectService {
             return $response;
         }
     }
+
+
+    public function deleteRecord($id)
+    {
+        try {
+
+            //Check Data Exist
+            $subject_count = Subject::where('id', $id)->count();
+
+            if($subject_count > 0){
+
+                $subject = Subject::where('id', $id)->delete();
+
+                $response = [
+                    'success' => true,
+                    'status' => 200,
+                    'message' => 'Data Deleted Successfully',
+                ];
+
+                return $response;
+
+            }else{
+
+                $response = [
+                    'success' => false,
+                    'status' => 404,
+                    'message' => 'Record Not Found'
+                ];
+
+                return $response;
+
+            }
+
+
+
+        } catch (\Throwable $th) {
+
+            $response = [
+                'success' => false,
+                'status' => 500,
+                'message' => $th->getMessage()
+            ];
+
+            return $response;
+
+        }
+    }
+
 }
