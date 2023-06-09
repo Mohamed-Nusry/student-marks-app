@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\StudentRankController;
 use App\Http\Controllers\Api\StudentSubjectController;
 use App\Http\Controllers\Api\SubjectAssignmentController;
 use App\Http\Controllers\Api\SubjectController;
+use App\Http\Controllers\Api\SubjectSlideController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\TeacherSubjectController;
 use Illuminate\Http\Request;
@@ -103,6 +104,13 @@ Route::group(['prefix' => ''], function(){
         Route::post('/', [SubjectAssignmentController::class, 'store']);
         Route::delete('/{id}', [SubjectAssignmentController::class, 'delete']);
         Route::get('/{id}', [SubjectAssignmentController::class, 'show']);
+    });
+
+    Route::group(['prefix' => 'teacher/slide', 'middleware' => ['auth:sanctum']], function(){
+        Route::get('/', [SubjectSlideController::class, 'index']);
+        Route::post('/', [SubjectSlideController::class, 'store']);
+        Route::delete('/{id}', [SubjectSlideController::class, 'delete']);
+        Route::get('/{id}', [SubjectSlideController::class, 'show']);
     });
 
     Route::group(['prefix' => 'student/submission', 'middleware' => ['auth:sanctum']], function(){
