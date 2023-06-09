@@ -24,33 +24,43 @@ class StudentService {
     {
         try {
 
-            //Check Data Exist
-            $student_count = Student::where('id', $id)->with('involved_subjects')->count();
+            //Check the access
+            if(Auth::user()->role_id == Config::get('constants.roles.STUDENT')){
 
-            if($student_count > 0){
+                //Check Data Exist
+                $student_count = Student::where('user_id', $id)->count();
 
-                $student = Student::where('id', $id)->first();
+                if($student_count > 0){
 
-                $response = [
-                    'success' => true,
-                    'status' => 200,
-                    'message' => 'Data Recieved Successfully',
-                    'data' => $student
-                ];
+                    $student = Student::where('user_id', $id)->first();
 
-                return $response;
+                    $response = [
+                        'success' => true,
+                        'status' => 200,
+                        'message' => 'Data Recieved Successfully',
+                        'data' => $student
+                    ];
+
+                }else{
+
+                    $response = [
+                        'success' => false,
+                        'status' => 404,
+                        'message' => 'Record Not Found',
+                    ];
+
+                }
 
             }else{
 
                 $response = [
                     'success' => false,
-                    'status' => 404,
-                    'message' => 'Record Not Found',
+                    'status' => 400,
+                    'message' => 'Access Denied',
                 ];
-
-                return $response;
-
             }
+
+            return $response;
 
 
 
@@ -107,6 +117,7 @@ class StudentService {
             if($result['status'] == 201){
 
                 $student = Student::create([
+                    'user_id' => $result['data']['id'],
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'email' => $request->email,
@@ -298,6 +309,14 @@ class StudentService {
 
                 }
 
+            }else{
+
+                $response = [
+                    'success' => false,
+                    'status' => 400,
+                    'message' => 'Access Denied',
+                ];
+
             }
 
             return $response;
@@ -317,35 +336,46 @@ class StudentService {
     public function updateRecord(object $request, $id)
     {
         try {
-            //Validate Request
-            $validateRequest = Validator::make($request->all(),
-            [
-                'email' => [
-                    Rule::unique('users')->ignore($id),
-                ],
-            ]);
+            //Check the access
+            if(Auth::user()->role_id == Config::get('constants.roles.STUDENT')){
+                //Validate Request
+                $validateRequest = Validator::make($request->all(),
+                [
+                    'email' => [
+                        Rule::unique('users')->ignore($id),
+                    ],
+                ]);
 
-            if($validateRequest->fails()){
+                if($validateRequest->fails()){
+
+                    $response = [
+                        'success' => false,
+                        'status' => 400,
+                        'message' => 'Validation error',
+                        'errors' => $validateRequest->errors()
+                    ];
+
+                    return $response;
+                }
+
+                $student = Student::findOrFail($id);
+                $student->update($request->all());
+
+                $response = [
+                    'success' => true,
+                    'status' => 200,
+                    'message' => 'Data Updated Successfully',
+                    'data' => $student
+                ];
+            }else{
 
                 $response = [
                     'success' => false,
                     'status' => 400,
-                    'message' => 'Validation error',
-                    'errors' => $validateRequest->errors()
+                    'message' => 'Access Denied',
                 ];
 
-                return $response;
             }
-
-            $student = Student::findOrFail($id);
-            $student->update($request->all());
-
-            $response = [
-                'success' => true,
-                'status' => 200,
-                'message' => 'Data Updated Successfully',
-                'data' => $student
-            ];
 
             return $response;
 

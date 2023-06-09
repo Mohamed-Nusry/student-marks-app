@@ -10,6 +10,7 @@ class Teacher extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'first_name',
         'last_name',
         'email',
@@ -17,5 +18,9 @@ class Teacher extends Model
         'qualification',
         'class_id',
         'teaching_subject_id',
+    ];
+
+    protected $hidden = [
+        'id'
     ];
 }

@@ -40,4 +40,23 @@ class AuthController extends Controller
 
         return response()->json($result, $result['status']);
     }
+
+     /**
+     * Change User Status
+     * @param Request $request
+     * @return User
+     */
+    public function blockUser(Request $request)
+    {
+        $result = $this->authService->blockUser($request);
+
+        return response()->json($result, $result['status']);
+    }
+
+    public function unblockUser(Request $request)
+    {
+        $result = $this->authService->unblockUser($request);
+
+        return response()->json($result, $result['status']);
+    }
 }

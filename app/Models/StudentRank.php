@@ -15,4 +15,13 @@ class StudentRank extends Model
         'marks',
         'rank',
     ];
+
+    protected $hidden = [
+        'student_id',
+        'subject_id',
+    ];
+
+    public function subject() {
+        return $this->belongsTo('App\Models\Subject', 'subject_id', 'id');
+    }
 }

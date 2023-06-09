@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Student;
+use App\Models\StudentRank;
 use App\Models\StudentSubject;
 use App\Models\Subject;
 use Illuminate\Http\Request;
@@ -12,6 +13,66 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class StudentSubjectService {
+
+    public function getAll()
+    {
+        try {
+
+            //Check the access
+            if(Auth::user()->role_id == Config::get('constants.roles.STUDENT')){
+
+                //Check student subject Exist
+                $student_subject_count = StudentSubject::where('student_id', Auth::user()->id)->count();
+
+                if($student_subject_count > 0){
+
+                    $student_subject_ids = StudentSubject::where('student_id', Auth::user()->id)->pluck('subject_id')->toArray();
+
+                    $student_subject = Subject::whereIn('id', $student_subject_ids)->with('slides')->with('assignments')->get();
+
+                    $response = [
+                        'success' => true,
+                        'status' => 200,
+                        'message' => 'Data Recieved Successfully',
+                        'data' => $student_subject
+                    ];
+
+
+                }else{
+                    $response = [
+                        'success' => false,
+                        'status' => 400,
+                        'message' => 'You are not involved in any subject yet',
+                    ];
+
+
+                }
+
+            }else{
+
+                $response = [
+                    'success' => false,
+                    'status' => 400,
+                    'message' => 'Access Denied',
+                ];
+
+            }
+
+            return $response;
+
+
+        } catch (\Throwable $th) {
+
+            $response = [
+                'success' => false,
+                'status' => 500,
+                'message' => $th->getMessage()
+            ];
+
+            return $response;
+
+        }
+    }
 
     public function createRecord(object $request)
     {
@@ -174,6 +235,14 @@ class StudentSubjectService {
 
                 }
 
+            }else{
+
+                $response = [
+                    'success' => false,
+                    'status' => 400,
+                    'message' => 'Access Denied',
+                ];
+
             }
 
             return $response;
@@ -194,33 +263,161 @@ class StudentSubjectService {
     {
         try {
 
-            //Check Data Exist
-            $student_subject_count = StudentSubject::where('id', $id)->count();
+            //Check the access
+            if(Auth::user()->role_id == Config::get('constants.roles.STUDENT')){
 
-            if($student_subject_count > 0){
+                //Check Data Exist
+                $student_subject_count = StudentSubject::where('id', $id)->count();
 
-                $student_subject = StudentSubject::where('id', $id)->delete();
+                if($student_subject_count > 0){
 
-                $response = [
-                    'success' => true,
-                    'status' => 200,
-                    'message' => 'Data Deleted Successfully',
-                ];
+                    $student_subject = StudentSubject::where('id', $id)->delete();
 
-                return $response;
+                    $response = [
+                        'success' => true,
+                        'status' => 200,
+                        'message' => 'Data Deleted Successfully',
+                    ];
+
+                }else{
+
+                    $response = [
+                        'success' => false,
+                        'status' => 404,
+                        'message' => 'Record Not Found'
+                    ];
+
+                }
 
             }else{
 
                 $response = [
                     'success' => false,
-                    'status' => 404,
-                    'message' => 'Record Not Found'
+                    'status' => 400,
+                    'message' => 'Access Denied',
                 ];
-
-                return $response;
 
             }
 
+            return $response;
+
+
+
+        } catch (\Throwable $th) {
+
+            $response = [
+                'success' => false,
+                'status' => 500,
+                'message' => $th->getMessage()
+            ];
+
+            return $response;
+
+        }
+    }
+
+
+    public function getAllRanks()
+    {
+        try {
+
+            //Check the access
+            if(Auth::user()->role_id == Config::get('constants.roles.STUDENT')){
+
+                //Check student subject Exist
+                $student_subject_count = StudentRank::where('student_id', Auth::user()->id)->count();
+
+                if($student_subject_count > 0){
+
+                    $student_subject = StudentRank::where('student_id', Auth::user()->id)->with('subject')->get();
+
+                    $response = [
+                        'success' => true,
+                        'status' => 200,
+                        'message' => 'Data Recieved Successfully',
+                        'data' => $student_subject
+                    ];
+
+
+                }else{
+                    $response = [
+                        'success' => false,
+                        'status' => 400,
+                        'message' => 'No ranks added to any subject yet',
+                    ];
+
+
+                }
+
+            }else{
+
+                $response = [
+                    'success' => false,
+                    'status' => 400,
+                    'message' => 'Access Denied',
+                ];
+
+            }
+
+            return $response;
+
+
+        } catch (\Throwable $th) {
+
+            $response = [
+                'success' => false,
+                'status' => 500,
+                'message' => $th->getMessage()
+            ];
+
+            return $response;
+
+        }
+    }
+
+    public function getRankBySubject($id)
+    {
+        try {
+
+            //Check the access
+            if(Auth::user()->role_id == Config::get('constants.roles.STUDENT')){
+
+                //Check student subject Exist
+                $student_subject_count = StudentRank::where('student_id', Auth::user()->id)->where('subject_id', $id)->count();
+
+                if($student_subject_count > 0){
+
+                    $student_subject = StudentRank::where('student_id', Auth::user()->id)->where('subject_id', $id)->with('subject')->first();
+
+                    $response = [
+                        'success' => true,
+                        'status' => 200,
+                        'message' => 'Data Recieved Successfully',
+                        'data' => $student_subject
+                    ];
+
+
+                }else{
+                    $response = [
+                        'success' => false,
+                        'status' => 400,
+                        'message' => 'No rank added to this subject yet or not involved in this subject',
+                    ];
+
+
+                }
+
+            }else{
+
+                $response = [
+                    'success' => false,
+                    'status' => 400,
+                    'message' => 'Access Denied',
+                ];
+
+            }
+
+            return $response;
 
 
         } catch (\Throwable $th) {

@@ -16,6 +16,41 @@ class StudentSubjectController extends Controller
         $this->studentSubjectService = $studentSubjectService;
     }
 
+      /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $result = $this->studentSubjectService->getAll();
+
+        return response()->json($result, $result['status']);
+    }
+
+    /**
+     * Display a all subject ranks.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function rank()
+    {
+        $result = $this->studentSubjectService->getAllRanks();
+
+        return response()->json($result, $result['status']);
+    }
+
+    /**
+     * Display a all subject rank by subject.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function rankBySubject($id)
+    {
+        $result = $this->studentSubjectService->getRankBySubject($id);
+
+        return response()->json($result, $result['status']);
+    }
 
      /**
      * Add Subject to student
