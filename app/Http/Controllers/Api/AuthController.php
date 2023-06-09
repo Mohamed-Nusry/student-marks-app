@@ -10,11 +10,11 @@ use App\Services\AuthService;
 class AuthController extends Controller
 {
 
-    private AuthService $AuthService;
+    private AuthService $authService;
 
-    public function __construct(AuthService $AuthService)
+    public function __construct(AuthService $authService)
     {
-        $this->AuthService = $AuthService;
+        $this->authService = $authService;
     }
 
     /**
@@ -24,7 +24,7 @@ class AuthController extends Controller
      */
     public function createUser(Request $request)
     {
-        $result = $this->AuthService->register($request);
+        $result = $this->authService->register($request);
 
         return response()->json($result, $result['status']);
     }
@@ -36,7 +36,7 @@ class AuthController extends Controller
      */
     public function loginUser(Request $request)
     {
-        $result = $this->AuthService->login($request);
+        $result = $this->authService->login($request);
 
         return response()->json($result, $result['status']);
     }
