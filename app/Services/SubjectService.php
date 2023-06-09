@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Subject;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -95,37 +96,52 @@ class SubjectService {
     public function createRecord(object $request)
     {
         try {
-             //Validate Request
-            $validateRequest = Validator::make($request->all(),
-            [
-                'name' => 'required|unique:subjects',
-            ]);
 
-            if($validateRequest->fails()){
+            //Check the access
+            if(Auth::user()->role_id == Config::get('constants.roles.ADMIN')){
+
+                //Validate Request
+                $validateRequest = Validator::make($request->all(),
+                [
+                    'name' => 'required|unique:subjects',
+                ]);
+
+                if($validateRequest->fails()){
+
+                    $response = [
+                        'success' => false,
+                        'status' => 400,
+                        'message' => 'Validation error',
+                        'errors' => $validateRequest->errors()
+                    ];
+
+                    return $response;
+                }
+
+                $subject = Subject::create([
+                    'name' => $request->name,
+                    'description' => $request->description,
+                ]);
+
+                $response = [
+                    'success' => true,
+                    'status' => 201,
+                    'message' => 'Data Created Successfully',
+                    'data' => $subject
+                ];
+
+                return $response;
+
+            }else{
 
                 $response = [
                     'success' => false,
                     'status' => 400,
-                    'message' => 'Validation error',
-                    'errors' => $validateRequest->errors()
+                    'message' => 'Access Denied',
                 ];
 
                 return $response;
             }
-
-            $subject = Subject::create([
-                'name' => $request->name,
-                'description' => $request->description,
-            ]);
-
-            $response = [
-                'success' => true,
-                'status' => 201,
-                'message' => 'Data Created Successfully',
-                'data' => $subject
-            ];
-
-            return $response;
 
         } catch (\Throwable $th) {
 
@@ -141,38 +157,54 @@ class SubjectService {
 
     public function updateRecord(object $request, $id)
     {
-        try {
-            //Validate Request
-            $validateRequest = Validator::make($request->all(),
-            [
-                'name' => [
-                    Rule::unique('subjects')->ignore($id),
-                ],
-            ]);
 
-            if($validateRequest->fails()){
+        try {
+
+            //Check the access
+            if(Auth::user()->role_id == Config::get('constants.roles.ADMIN')){
+
+                //Validate Request
+                $validateRequest = Validator::make($request->all(),
+                [
+                    'name' => [
+                        Rule::unique('subjects')->ignore($id),
+                    ],
+                ]);
+
+                if($validateRequest->fails()){
+
+                    $response = [
+                        'success' => false,
+                        'status' => 400,
+                        'message' => 'Validation error',
+                        'errors' => $validateRequest->errors()
+                    ];
+
+                    return $response;
+                }
+
+                $subject = Subject::findOrFail($id);
+                $subject->update($request->all());
+
+                $response = [
+                    'success' => true,
+                    'status' => 200,
+                    'message' => 'Data Updated Successfully',
+                    'data' => $subject
+                ];
+
+                return $response;
+
+            }else{
 
                 $response = [
                     'success' => false,
                     'status' => 400,
-                    'message' => 'Validation error',
-                    'errors' => $validateRequest->errors()
+                    'message' => 'Access Denied',
                 ];
 
                 return $response;
             }
-
-            $subject = Subject::findOrFail($id);
-            $subject->update($request->all());
-
-            $response = [
-                'success' => true,
-                'status' => 200,
-                'message' => 'Data Updated Successfully',
-                'data' => $subject
-            ];
-
-            return $response;
 
         } catch (\Throwable $th) {
 
