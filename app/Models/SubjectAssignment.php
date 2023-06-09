@@ -11,6 +11,18 @@ class SubjectAssignment extends Model
 
     protected $fillable = [
         'subject_id',
+        'title',
+        'deadline',
         'assignment_file',
     ];
+
+    protected $hidden = [
+        'subject_id',
+    ];
+
+    public function subject() {
+        return $this->belongsTo('App\Models\Subject', 'subject_id', 'id');
+    }
+
+
 }

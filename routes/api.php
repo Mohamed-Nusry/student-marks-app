@@ -4,7 +4,10 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FavouriteSubjectController;
 use App\Http\Controllers\Api\StudentController;
 use App\Http\Controllers\Api\StudentSubjectController;
+use App\Http\Controllers\Api\SubjectAssignmentController;
 use App\Http\Controllers\Api\SubjectController;
+use App\Http\Controllers\Api\TeacherController;
+use App\Http\Controllers\Api\TeacherSubjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -53,7 +56,16 @@ Route::group(['prefix' => ''], function(){
         Route::group(['prefix' => '', 'middleware' => ['auth:sanctum']], function(){
             Route::get('/', [StudentController::class, 'index']);
             Route::put('/{id}', [StudentController::class, 'update']);
-            //Route::get('/{id}', [StudentController::class, 'show']);
+        });
+    });
+
+    Route::group(['prefix' => 'teacher'], function(){
+
+        Route::post('/', [TeacherController::class, 'store']);
+
+        Route::group(['prefix' => '', 'middleware' => ['auth:sanctum']], function(){
+            Route::get('/', [TeacherController::class, 'index']);
+            Route::put('/{id}', [TeacherController::class, 'update']);
         });
     });
 
@@ -72,6 +84,21 @@ Route::group(['prefix' => ''], function(){
         Route::put('/{id}', [FavouriteSubjectController::class, 'update']);
         Route::get('/{id}', [FavouriteSubjectController::class, 'show']);
         Route::delete('/{id}', [FavouriteSubjectController::class, 'delete']);
+    });
+
+    Route::group(['prefix' => 'teacher/subject', 'middleware' => ['auth:sanctum']], function(){
+        Route::get('/', [TeacherSubjectController::class, 'index']);
+        Route::post('/', [TeacherSubjectController::class, 'store']);
+        Route::put('/{id}', [TeacherSubjectController::class, 'update']);
+        Route::delete('/{id}', [TeacherSubjectController::class, 'delete']);
+    });
+
+    Route::group(['prefix' => 'teacher/assignment', 'middleware' => ['auth:sanctum']], function(){
+        Route::get('/', [SubjectAssignmentController::class, 'index']);
+        Route::post('/', [SubjectAssignmentController::class, 'store']);
+        Route::put('/{id}', [SubjectAssignmentController::class, 'update']);
+        Route::delete('/{id}', [SubjectAssignmentController::class, 'delete']);
+        Route::get('/{id}', [SubjectAssignmentController::class, 'show']);
     });
 
 });

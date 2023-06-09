@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Student;
 use App\Models\StudentSubject;
 use App\Models\Subject;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -157,181 +158,181 @@ class StudentService {
         }
     }
 
-    public function createSubject(object $request)
-    {
-        try {
-            //Validate Request
-            $validateRequest = Validator::make($request->all(),
-            [
-                'subject_id' => 'numeric|required',
-            ]);
+    // public function createSubject(object $request)
+    // {
+    //     try {
+    //         //Validate Request
+    //         $validateRequest = Validator::make($request->all(),
+    //         [
+    //             'subject_id' => 'numeric|required',
+    //         ]);
 
-            if($validateRequest->fails()){
+    //         if($validateRequest->fails()){
 
-                $response = [
-                    'success' => false,
-                    'status' => 400,
-                    'message' => 'Validation error',
-                    'errors' => $validateRequest->errors()
-                ];
+    //             $response = [
+    //                 'success' => false,
+    //                 'status' => 400,
+    //                 'message' => 'Validation error',
+    //                 'errors' => $validateRequest->errors()
+    //             ];
 
-                return $response;
-            }
-
-
-            //Check the access
-            if(Auth::user()->role_id == Config::get('constants.roles.STUDENT')){
-
-                //Check Subject Exist
-                $subject_count = Subject::where('id', $request->subject_id)->count();
-
-                if($subject_count > 0){
-
-                    //Check already involved
-                    $involved_count = StudentSubject::where('student_id', Auth::user()->id)->where('subject_id', $request->subject_id)->count();
-
-                    if($involved_count > 0){
-
-                        $response = [
-                            'success' => false,
-                            'status' => 404,
-                            'message' => 'You Already Involved With This Subject',
-                        ];
-
-                    }else{
-
-                        $student_subject = StudentSubject::create([
-                            'student_id' => Auth::user()->id,
-                            'subject_id' => $request->subject_id,
-                        ]);
-
-                        $response = [
-                            'success' => true,
-                            'status' => 200,
-                            'message' => 'Data Created Successfully',
-                            'data' => $student_subject
-                        ];
-
-                    }
+    //             return $response;
+    //         }
 
 
+    //         //Check the access
+    //         if(Auth::user()->role_id == Config::get('constants.roles.STUDENT')){
 
-                }else{
+    //             //Check Subject Exist
+    //             $subject_count = Subject::where('id', $request->subject_id)->count();
 
-                    $response = [
-                        'success' => false,
-                        'status' => 404,
-                        'message' => 'Subject Not Found',
-                    ];
+    //             if($subject_count > 0){
 
-                }
+    //                 //Check already involved
+    //                 $involved_count = StudentSubject::where('student_id', Auth::user()->id)->where('subject_id', $request->subject_id)->count();
+
+    //                 if($involved_count > 0){
+
+    //                     $response = [
+    //                         'success' => false,
+    //                         'status' => 404,
+    //                         'message' => 'You Already Involved With This Subject',
+    //                     ];
+
+    //                 }else{
+
+    //                     $student_subject = StudentSubject::create([
+    //                         'student_id' => Auth::user()->id,
+    //                         'subject_id' => $request->subject_id,
+    //                     ]);
+
+    //                     $response = [
+    //                         'success' => true,
+    //                         'status' => 200,
+    //                         'message' => 'Data Created Successfully',
+    //                         'data' => $student_subject
+    //                     ];
+
+    //                 }
 
 
 
-            }else{
+    //             }else{
 
-                $response = [
-                    'success' => false,
-                    'status' => 400,
-                    'message' => 'Access Denied',
-                ];
+    //                 $response = [
+    //                     'success' => false,
+    //                     'status' => 404,
+    //                     'message' => 'Subject Not Found',
+    //                 ];
 
-            }
+    //             }
 
 
-            return $response;
 
-        } catch (\Throwable $th) {
+    //         }else{
 
-            $response = [
-                'success' => false,
-                'status' => 500,
-                'message' => $th->getMessage()
-            ];
+    //             $response = [
+    //                 'success' => false,
+    //                 'status' => 400,
+    //                 'message' => 'Access Denied',
+    //             ];
 
-            return $response;
-        }
-    }
+    //         }
 
-    public function updateSubject(object $request, $id)
-    {
-        try {
-            //Validate Request
-            $validateRequest = Validator::make($request->all(),
-            [
-                'subject_id' => 'numeric',
-            ]);
 
-            if($validateRequest->fails()){
+    //         return $response;
 
-                $response = [
-                    'success' => false,
-                    'status' => 400,
-                    'message' => 'Validation error',
-                    'errors' => $validateRequest->errors()
-                ];
+    //     } catch (\Throwable $th) {
 
-                return $response;
-            }
+    //         $response = [
+    //             'success' => false,
+    //             'status' => 500,
+    //             'message' => $th->getMessage()
+    //         ];
 
-            //Check the access
-            if(Auth::user()->role_id == Config::get('constants.roles.STUDENT')){
+    //         return $response;
+    //     }
+    // }
 
-                 //Check Subject Exist
-                 $subject_count = Subject::where('id', $request->subject_id)->count();
+    // public function updateSubject(object $request, $id)
+    // {
+    //     try {
+    //         //Validate Request
+    //         $validateRequest = Validator::make($request->all(),
+    //         [
+    //             'subject_id' => 'numeric',
+    //         ]);
 
-                 if($subject_count > 0){
+    //         if($validateRequest->fails()){
 
-                     //Check already involved
-                     $involved_count = StudentSubject::where('student_id', Auth::user()->id)->where('subject_id', $request->subject_id)->count();
+    //             $response = [
+    //                 'success' => false,
+    //                 'status' => 400,
+    //                 'message' => 'Validation error',
+    //                 'errors' => $validateRequest->errors()
+    //             ];
 
-                     if($involved_count > 0){
+    //             return $response;
+    //         }
 
-                        $response = [
-                            'success' => false,
-                            'status' => 404,
-                            'message' => 'You Already Involved With This Subject',
-                        ];
+    //         //Check the access
+    //         if(Auth::user()->role_id == Config::get('constants.roles.STUDENT')){
 
-                     }else{
+    //              //Check Subject Exist
+    //              $subject_count = Subject::where('id', $request->subject_id)->count();
 
-                        $student = StudentSubject::findOrFail($id);
-                        $student->update($request->all());
+    //              if($subject_count > 0){
 
-                        $response = [
-                            'success' => true,
-                            'status' => 200,
-                            'message' => 'Data Updated Successfully',
-                            'data' => $student
-                        ];
+    //                  //Check already involved
+    //                  $involved_count = StudentSubject::where('student_id', Auth::user()->id)->where('subject_id', $request->subject_id)->count();
 
-                     }
+    //                  if($involved_count > 0){
 
-                }
+    //                     $response = [
+    //                         'success' => false,
+    //                         'status' => 404,
+    //                         'message' => 'You Already Involved With This Subject',
+    //                     ];
 
-            }else{
+    //                  }else{
 
-                $response = [
-                    'success' => false,
-                    'status' => 400,
-                    'message' => 'Access Denied',
-                ];
+    //                     $student = StudentSubject::findOrFail($id);
+    //                     $student->update($request->all());
 
-            }
+    //                     $response = [
+    //                         'success' => true,
+    //                         'status' => 200,
+    //                         'message' => 'Data Updated Successfully',
+    //                         'data' => $student
+    //                     ];
 
-            return $response;
+    //                  }
 
-        } catch (\Throwable $th) {
+    //             }
 
-            $response = [
-                'success' => false,
-                'status' => 500,
-                'message' => $th->getMessage()
-            ];
+    //         }else{
 
-            return $response;
-        }
-    }
+    //             $response = [
+    //                 'success' => false,
+    //                 'status' => 400,
+    //                 'message' => 'Access Denied',
+    //             ];
+
+    //         }
+
+    //         return $response;
+
+    //     } catch (\Throwable $th) {
+
+    //         $response = [
+    //             'success' => false,
+    //             'status' => 500,
+    //             'message' => $th->getMessage()
+    //         ];
+
+    //         return $response;
+    //     }
+    // }
 
     public function updateRecord(object $request, $id)
     {
@@ -358,8 +359,15 @@ class StudentService {
                     return $response;
                 }
 
-                $student = Student::findOrFail($id);
+                $student = Student::where('user_id',$id)->first();
                 $student->update($request->all());
+
+                if($request->email && $request->email != null && $request->email != ""){
+                    //Update user table also
+                    $update_user = User::where('id',$id)->first();
+                    $update_user->email = $request->email;
+                    $update_user->save();
+                }
 
                 $response = [
                     'success' => true,
