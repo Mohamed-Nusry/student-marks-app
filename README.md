@@ -9,3 +9,11 @@
 ### Prerequisite to the application
 
 Postman Collection have been added seperately.
+
+### Admin Credentials
+
+Username
+admin@system.com
+
+Password
+admin@system177&^
