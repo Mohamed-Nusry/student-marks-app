@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\SubjectAssignmentService;
+use App\Services\AssignmentSubmissionService;
 use Illuminate\Http\Request;
 
-class SubjectAssignmentController extends Controller
+class AssignmentSubmissionController extends Controller
 {
-    private SubjectAssignmentService $subjectAssignmentService;
+    private AssignmentSubmissionService $assignmentSubmissionService;
 
-    public function __construct(SubjectAssignmentService $subjectAssignmentService)
+    public function __construct(AssignmentSubmissionService $assignmentSubmissionService)
     {
-        $this->subjectAssignmentService = $subjectAssignmentService;
+        $this->assignmentSubmissionService = $assignmentSubmissionService;
     }
 
     /**
@@ -22,7 +22,7 @@ class SubjectAssignmentController extends Controller
      */
     public function index()
     {
-        $result = $this->subjectAssignmentService->getAll();
+        $result = $this->assignmentSubmissionService->getAll();
 
         return response()->json($result, $result['status']);
     }
@@ -35,7 +35,7 @@ class SubjectAssignmentController extends Controller
      */
     public function store(Request $request)
     {
-        $result = $this->subjectAssignmentService->createRecord($request);
+        $result = $this->assignmentSubmissionService->createRecord($request);
 
         return response()->json($result, $result['status']);
     }
@@ -43,12 +43,12 @@ class SubjectAssignmentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\SubjectAssignment
+     * @param  \App\Models\AssignmentSubmission
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $result = $this->subjectAssignmentService->viewData($id);
+        $result = $this->assignmentSubmissionService->viewData($id);
 
         return response()->json($result, $result['status']);
     }
@@ -56,12 +56,12 @@ class SubjectAssignmentController extends Controller
     /**
      * Delete the specified resource.
      *
-     * @param  \App\Models\SubjectAssignment
+     * @param  \App\Models\AssignmentSubmission
      * @return \Illuminate\Http\Response
      */
     public function delete($id)
     {
-        $result = $this->subjectAssignmentService->deleteRecord($id);
+        $result = $this->assignmentSubmissionService->deleteRecord($id);
 
         return response()->json($result, $result['status']);
     }

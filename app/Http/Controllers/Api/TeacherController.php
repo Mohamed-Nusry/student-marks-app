@@ -55,4 +55,18 @@ class TeacherController extends Controller
         return response()->json($result, $result['status']);
     }
 
+      /**
+     * Display all students related to teacher.
+     *
+     * @param  \App\Models\Teacher
+     * @return \Illuminate\Http\Response
+     */
+    public function student()
+    {
+        $result = $this->teacherService->getStudents();
+
+        return response()->json($result, $result['status']);
+    }
+
+
 }

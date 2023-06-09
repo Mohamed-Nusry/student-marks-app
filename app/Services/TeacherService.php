@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\TeacherSubject;
 use App\Models\Subject;
@@ -224,6 +225,48 @@ class TeacherService {
             ];
 
             return $response;
+        }
+    }
+
+    public function getStudents()
+    {
+        try {
+
+            //Check the access
+            if(Auth::user()->role_id == Config::get('constants.roles.TEACHER')){
+
+                $get_teacher_data = Teacher::where('user_id', Auth::user()->id)->first();
+
+                $related_students = Student::where('class_id', $get_teacher_data->class_id)->get();
+
+                $response = [
+                    'success' => true,
+                    'status' => 200,
+                    'message' => 'Data Recieved Successfully',
+                    'data' => $related_students
+                ];
+
+            }else{
+
+                $response = [
+                    'success' => false,
+                    'status' => 400,
+                    'message' => 'Access Denied',
+                ];
+            }
+
+            return $response;
+
+        } catch (\Throwable $th) {
+
+            $response = [
+                'success' => false,
+                'status' => 500,
+                'message' => $th->getMessage()
+            ];
+
+            return $response;
+
         }
     }
 

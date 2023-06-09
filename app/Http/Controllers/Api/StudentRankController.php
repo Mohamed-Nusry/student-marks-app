@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\SubjectAssignmentService;
+use App\Services\StudentRankService;
 use Illuminate\Http\Request;
 
-class SubjectAssignmentController extends Controller
+class StudentRankController extends Controller
 {
-    private SubjectAssignmentService $subjectAssignmentService;
+    private StudentRankService $studentRankService;
 
-    public function __construct(SubjectAssignmentService $subjectAssignmentService)
+    public function __construct(StudentRankService $studentRankService)
     {
-        $this->subjectAssignmentService = $subjectAssignmentService;
+        $this->studentRankService = $studentRankService;
     }
 
     /**
@@ -22,7 +22,7 @@ class SubjectAssignmentController extends Controller
      */
     public function index()
     {
-        $result = $this->subjectAssignmentService->getAll();
+        $result = $this->studentRankService->getAll();
 
         return response()->json($result, $result['status']);
     }
@@ -35,7 +35,7 @@ class SubjectAssignmentController extends Controller
      */
     public function store(Request $request)
     {
-        $result = $this->subjectAssignmentService->createRecord($request);
+        $result = $this->studentRankService->createRecord($request);
 
         return response()->json($result, $result['status']);
     }
@@ -43,26 +43,27 @@ class SubjectAssignmentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\SubjectAssignment
+     * @param  \App\Models\StudentRank
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $result = $this->subjectAssignmentService->viewData($id);
+        $result = $this->studentRankService->viewData($id);
 
         return response()->json($result, $result['status']);
     }
 
     /**
-     * Delete the specified resource.
+     * Update the specified resource.
      *
-     * @param  \App\Models\SubjectAssignment
+     * @param  \App\Models\StudentRank
      * @return \Illuminate\Http\Response
      */
-    public function delete($id)
+    public function update(Request $request, $id)
     {
-        $result = $this->subjectAssignmentService->deleteRecord($id);
+        $result = $this->studentRankService->updateRecord($request, $id);
 
         return response()->json($result, $result['status']);
     }
+
 }

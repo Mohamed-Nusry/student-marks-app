@@ -6,6 +6,7 @@ use App\Models\SubjectAssignment;
 use App\Models\TeacherSubject;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -222,13 +223,6 @@ class SubjectAssignmentService {
                             ];
                         }
 
-
-
-
-
-
-
-
                     }else{
 
                         $response = [
@@ -273,45 +267,52 @@ class SubjectAssignmentService {
         }
     }
 
-    public function updateRecord(object $request, $id)
+    public function deleteRecord($id)
     {
-
         try {
 
             //Check the access
             if(Auth::user()->role_id == Config::get('constants.roles.TEACHER')){
 
-                //Validate Request
-                $validateRequest = Validator::make($request->all(),
-                [
-                    'name' => [
-                        Rule::unique('subject_assignments')->ignore($id),
-                    ],
-                ]);
+                //Check Data Exist
+                $subject_assignment_count = SubjectAssignment::where('id', $id)->count();
 
-                if($validateRequest->fails()){
+                if($subject_assignment_count > 0){
+
+                    $subject_assignment = SubjectAssignment::where('id', $id)->first();
+
+                    $teacher_subject_ids = TeacherSubject::where('teacher_id', Auth::user()->id)->pluck('subject_id')->toArray();
+
+                    if(in_array($subject_assignment->subject_id, $teacher_subject_ids)){
+
+                        $subject_assignment_delete = SubjectAssignment::where('id', $id)->delete();
+
+                        $response = [
+                            'success' => true,
+                            'status' => 200,
+                            'message' => 'Data Deleted Successfully',
+                        ];
+
+                    }else{
+
+                        $response = [
+                            'success' => false,
+                            'status' => 400,
+                            'message' => 'This subject is not assigned to you',
+                        ];
+
+                    }
+
+
+                }else{
 
                     $response = [
                         'success' => false,
-                        'status' => 400,
-                        'message' => 'Validation error',
-                        'errors' => $validateRequest->errors()
+                        'status' => 404,
+                        'message' => 'Record Not Found'
                     ];
 
-                    return $response;
                 }
-
-                $subject_assignment = SubjectAssignment::findOrFail($id);
-                $subject_assignment->update($request->all());
-
-                $response = [
-                    'success' => true,
-                    'status' => 200,
-                    'message' => 'Data Updated Successfully',
-                    'data' => $subject_assignment
-                ];
-
-                return $response;
 
             }else{
 
@@ -321,54 +322,9 @@ class SubjectAssignmentService {
                     'message' => 'Access Denied',
                 ];
 
-                return $response;
             }
-
-        } catch (\Throwable $th) {
-
-            $response = [
-                'success' => false,
-                'status' => 500,
-                'message' => $th->getMessage()
-            ];
 
             return $response;
-        }
-    }
-
-
-    public function deleteRecord($id)
-    {
-        try {
-
-            //Check Data Exist
-            $subject_assignment_count = SubjectAssignment::where('id', $id)->count();
-
-            if($subject_assignment_count > 0){
-
-                $subject_assignment = SubjectAssignment::where('id', $id)->delete();
-
-                $response = [
-                    'success' => true,
-                    'status' => 200,
-                    'message' => 'Data Deleted Successfully',
-                ];
-
-                return $response;
-
-            }else{
-
-                $response = [
-                    'success' => false,
-                    'status' => 404,
-                    'message' => 'Record Not Found'
-                ];
-
-                return $response;
-
-            }
-
-
 
         } catch (\Throwable $th) {
 

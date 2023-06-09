@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\AssignmentSubmissionController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FavouriteSubjectController;
+use App\Http\Controllers\Api\GradeController;
 use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\StudentRankController;
 use App\Http\Controllers\Api\StudentSubjectController;
 use App\Http\Controllers\Api\SubjectAssignmentController;
 use App\Http\Controllers\Api\SubjectController;
@@ -29,6 +32,7 @@ Route::post('/auth/register', [AuthController::class, 'createUser']);
 Route::post('/auth/login', [AuthController::class, 'loginUser']);
 Route::get('/subject/view', [SubjectController::class, 'index']);
 Route::get('/subject/view/{id}', [SubjectController::class, 'show']);
+Route::get('/class/view', [GradeController::class, 'index']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -66,6 +70,7 @@ Route::group(['prefix' => ''], function(){
         Route::group(['prefix' => '', 'middleware' => ['auth:sanctum']], function(){
             Route::get('/', [TeacherController::class, 'index']);
             Route::put('/{id}', [TeacherController::class, 'update']);
+            Route::get('/student', [TeacherController::class, 'student']);
         });
     });
 
@@ -96,9 +101,22 @@ Route::group(['prefix' => ''], function(){
     Route::group(['prefix' => 'teacher/assignment', 'middleware' => ['auth:sanctum']], function(){
         Route::get('/', [SubjectAssignmentController::class, 'index']);
         Route::post('/', [SubjectAssignmentController::class, 'store']);
-        Route::put('/{id}', [SubjectAssignmentController::class, 'update']);
         Route::delete('/{id}', [SubjectAssignmentController::class, 'delete']);
         Route::get('/{id}', [SubjectAssignmentController::class, 'show']);
+    });
+
+    Route::group(['prefix' => 'student/submission', 'middleware' => ['auth:sanctum']], function(){
+        Route::get('/', [AssignmentSubmissionController::class, 'index']);
+        Route::post('/', [AssignmentSubmissionController::class, 'store']);
+        Route::delete('/{id}', [AssignmentSubmissionController::class, 'delete']);
+        Route::get('/{id}', [AssignmentSubmissionController::class, 'show']);
+    });
+
+    Route::group(['prefix' => 'teacher/rank', 'middleware' => ['auth:sanctum']], function(){
+        Route::get('/', [StudentRankController::class, 'index']);
+        Route::post('/', [StudentRankController::class, 'store']);
+        Route::get('/{id}', [StudentRankController::class, 'show']);
+        Route::put('/{id}', [StudentRankController::class, 'update']);
     });
 
 });
