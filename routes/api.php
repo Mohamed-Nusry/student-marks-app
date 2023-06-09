@@ -27,17 +27,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-
 //Unauthorized Routes
-Route::post('/auth/register', [AuthController::class, 'createUser']);
 Route::post('/auth/login', [AuthController::class, 'loginUser']);
 Route::get('/subject/view', [SubjectController::class, 'index']);
 Route::get('/subject/view/{id}', [SubjectController::class, 'show']);
 Route::get('/class/view', [GradeController::class, 'index']);
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
 Route::group(['prefix' => ''], function(){
 
@@ -127,6 +121,10 @@ Route::group(['prefix' => ''], function(){
         Route::put('/{id}', [StudentRankController::class, 'update']);
     });
 
+});
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });
 
 
